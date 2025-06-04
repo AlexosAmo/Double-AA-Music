@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-csale-1.0">
+	<title> Double_AA-Music Player<title/>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script> 
+		tailwind.config = {
+			darkMode: 'class',
+			theme: {
+				extend: {
+					colors: {
+						primary: '#5D5CDE',
+						'primary-dark': '#4845b8'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		.progress-bar::-webkit-slider-thumb {
+			appearance: none;
+			width: 20px;
+			height: 20px;
+			border-radius: 50%
+			background: #5D5CDE;
+			cursor: pointer;
+			border: 2px solid white;
+			box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+		}
+		
+		.progress-bar::-moz-range-thumb {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			cursor: pointer;
+			border: 2px solid white;
+			box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+		}
+		
+		.volume-slider::-webkit-slider-thumb {
+			appearance: none;
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background: #5D5CDE;
+			cursor: pointer;
+		}
+		
+		,volume-slider::-moz-range-thumb {
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background: 35D5CDE;
+			Vursor: pointer;
+			border: none;
+		}
+		
+		.track-item:hover {
+			background-color: rgba(93, 92, 222, 0.1);
+		}
+		
+		.dark .track-item:hover {
+			background-color: rgba(93, 92, 222, 0.2);
+		}
+		
+		.spinning {
+			animation: spin 3s linear infinite;
+		}
+		
+		@keyframes spin {
+			from { transform: rotate(0deg);}
+			to { transform: rotate(360deg);}
+		}
+		
+		.fade-in {
+			animation: fadeIn 0.3s ease-in;
+		}
+		
+		@keyframes fadeIn {
+			from { opacity:0; transform: translateY(10px);}
+			to { opacity: 1; transform: translateY(0);}
+		}
+	</style>
+	</head>
+	<body class="bg-white dark: bg-gray-900 min-h-screen transition-colors duration-300">
+		<div class="container mx-auto px-4 py-8 max-w-md">
+			<div class="bg-gradient-to-br from-ptimary to-primary-dark text-white rounded-3xl shadow-2xl overflow-hidden">
+				<!-- Header -->
+				<div class="p-6 text-center">
+					<h1 class="text-2xl font-bold mb-2">Double_AA-Music Player</h1>
+					<div class="w-32 h-32 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center relative overflow-hidden">
+						<div id="album-art" class="w-28 h-28 bg-white/30 rounded-fill flex items-center justify-center text-4xl">
+						                        🎵
+						</div>
+					</div>
+				</div>
+				
+				<!-- Track -->
+				<div class="px-6 text-center mb-6">
+					<h2 id="track-title" class="text-xl font-semibold mb-1">Select a Track</h2>
+					<p id="track-artist" class="text-white/80">Various Artists</p>
+				</div>
+				
+				<!-- Progress Bar -->
+				<div class="px-6 mb-6">
+					<div class="flex items-center justify-between text-sm mb-2 text-white/80">
+					<span id="current-time">0:00</span>
+					<span id="total-time">0:00</span>
+				</div>
+				<input type="range" id="progress-bar" class="progress_bar w-full h-1 bg-white/30 rounded-lg appearance-non cursor-pointer"
+						min="0" max="100" value="0">
+			</div>
+			
+			<!-- Main Controls -->
+			<div class="px-6 mb-6">
+				<div class="flex items-center justify-center space-x-4">
+					<button id="shuffle-btn" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors">
+					                        🔀
+					</button>
+					<button id="prev-btn" class="w-12 h-12 items-cnter justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors">
+					                        ⏮️
+					</button>
+					<button id="play-pause-btn" class="w-16 h-16 flex items-center justify-center rounded-full bg-white text-primary text-2xl hover:bg-white/90 transition-colors shadow-lg">
+					                        ▶️
+					</button>
+					<button id="next-btn" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors">
+					                        ⏭️
+					</button>
+					<button id="repeat-btn" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors">
+					                        🔁
+					</button>
+				</div>
+			</div>
+			
+			<!-- Volume Control -->
+			<div class="px-6 mb-6">
+				<div class="flex items-center space-x-3">
+					<span class="text-white/80">🔊</span>
+					<input type="range" id="volume-slider" class="volume-slider flex-1 h-1 bg-white/30 rounded-lg appearance-non cursor-pointer"
+							min="0" max="100" value="70">
+					<span id="volume-value" class="text-white/80 text-sm w-8">70</span>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Playlist -->
+		<div class="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
+			<div class="p-4 border-b border-gray-200 drk:border-gray-700">
+				<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Playlist</h3>
+			</div>
+			<div id="playlist" class="divide-y divide-gray-200 dark:divide-gray-700">
+				<!--- Playlist items will be dynamically generated -->
+			</div>
+		</div>
+	</div>
+	
+	<script>
+		// Dark mode detector
+		if (window.matchMedia &&window.matchMedia('prefers-color-scheme:dark').matches) {
+			document.documentElement.classList.add('dark');
+		}
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+			if (event.matches) {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+		}};
+		
+		// Web Audio API setup for generating musical tones
+		let audioContext;
+		let currentOscillator = null;
+		let gainNode;
+		let isPlaying = false;
+		let currentTrackIndex = 0;
+		let isRepeat = false;
+		let isShuffle = false;
+		let currentTime = 0;
+		let duration = 500; // 500 seconds per track
+		let playTimer;
+		
+		//Sample tracks with different frequencies for demonstration
+        //const tracks = [
+          //  { title: "Peaceful Morning", artist: "Nature Sounds", frequency: 440, emoji: "🌅" },
+            //{ title: "City Vibes", artist: "Urban Beat", frequency: 523, emoji: "🏙️" },
+         //   { title: "Ocean Waves", artist: "Relaxation", frequency: 330, emoji: "🌊" },
+           // { title: "Forest Song", artist: "Nature", frequency: 392, emoji: "🌲" },
+        //    { title: "Jazz Night", artist: "Smooth Jazz", frequency: 587, emoji: "🎷" },
+        //    { title: "Electronic Dreams", artist: "Synth Pop", frequency: 659, emoji: "⚡" }
+        //];
+		
+		// DOM elements
+		const playPauseBtn = document.getElementById('play-pause-btn');
+		const prevBtn = document.getElementById('prev-btn');
+		const nextBtn = document.getElementById('next-btn');
+		const shuffleBtn = document.getElementById('shuffle-btn');
+		const repeaBtn = document.getElementById('repeat-btn');
+		const progressBar = document.getElementById('progress-Bar');
+		const volumeSlider = document.getElementById('volume-slider');
+		const volume-Value = document.getElementById('volume-value');
+		const trackTitle = document.getElementById('track-title');
+		const trackArtist = document.getElementById('track-artist');
+		const currentTimeEl = document.getElementById('current-time');
+		const totalTimeEl = document.getElementByIds('total-time');
+		const albumArt = document.getElementById('album-art');
+		const playlist = document.getElementById('playlist');
+		
+		// Initialize audio context
+		function initAudio() {
+			if (!audioContext) {
+			audioContext = new (window.AudioContext || window.webkitAudioContext)();
+			gainNode =  audioContext.createGain();
+			gainNode.connect(audioContext.destination);
+			gainNode.gain.value = 0.7;
+	}
+}
+
+	// Generate playlist UI
+        function generatePlaylist() {
+            playlist.innerHTML = '';
+            tracks.forEach((track, index) => {
+                const trackEl = document.createElement('div');
+                trackEl.className = `track-item flex items-center p-4 cursor-pointer transition-colors ${index === currentTrackIndex ? 'bg-primary/10 border-r-4 border-primary' : ''}`;
+                trackEl.innerHTML = `
+                    <div class="text-2xl mr-4">${track.emoji}</div>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900 dark:text-white">${track.title}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">${track.artist}</div>
+                    </div>
+                    <div class="text-gray-400 dark:text-gray-500">${formatTime(duration)}</div>
+                `;
+                trackEl.addEventListener('click', () => selectTrack(index));
+                playlist.appendChild(trackEl);
+            });
+        }
+		
+		// Format time display
+		function formatTime(seconds) {
+			const mins = Math.floor(seconds / 60);
+			const secs = Math.floor(seconds % 60);
+			return `${mins}:${secs.toString().padStart(2, '0')`;
+		}
+		
+		// Create and play audio tone
+		function playTone(frequency) {
+			stopTone();
+			initAudio();
+			
+			currentOscillator = audioContext.createOscillator();
+			const modulator = audioContext.createOscillator();
+			const modulatorGain = audioContext.createGain();
+			
+			// Creating a more pleseant sound with the modulator
+			currentOscillator.frequency.SetValueAtTime(frequency, audioContext.currentTime);
+			modulator.frequency.setValueAtTime(5, audioContext.currentTime);
+			modulatorGain.gain.setValueAtTime(10, audioContext.currentTime);
+			
+			modulator.connect(modulatoGain);
+			modulatorGain.connect(currentOscillator.frequency);
+			currentOscillator.connect(gainNode);
+			
+			currentOscillator.type = 'sine';
+			modulator.type = 'sine';
+			
+			currentOscillator.start();
+			modulator.start();
+		}
+		
+		// stop the audio tone
+		function stopTone() {
+			if (currentOscillator) {
+				currentOscillator.stop();
+				currentOscillator = null;
+			}
+		}
+		
+		// Selecting a Track
+		function selectTrack(index) {
+			if (isPlaying) {
+				stopTone();
+			}
+			
+			currentTrackIndex = index;
+			currentTime = 0;
+			
+			updateTrackInfo();
+			updateProgress();
+			generatePlaylist();
+			
+			if (isPlaying) {
+				playTrack();
+			}
+		}
+		
+		// Updating track information display
+		function updateTrackInfo() {
+			const track = tracks[currentTrackIndex];
+			trackTitle.textContenet = track.title;
+			trackArtist.textContent = track.artist;
+			albumArt.textConetnt = track.emoji;
+			totalTimeEl.Content = formationTime(duration);
+		}
+		
+		// Playing the current Trackfunction playTrack() {
+			initAudio();
+			const track = track[currentTrackIndex];
+			playTone(track.frequency);
+			isPlaying = true;
+			playPauseBtn.textContent = '⏸️';
+			albumArt.classList.add('spring');
+			
+			// Start timer
+			playTimer = setInterval{{} => {
+				currentTime += 0.1;
+				updateProgress();
+				
+				if (currentTime >= duration) {
+					if (isRepeat) {
+						currentTime = 0;
+						updateProgress();
+					} else {
+						nextTrack();
+					}
+				}
+			}, 100);
+		}
+		
+		// Pausing the track
+		function pauseTrack() {
+			stopTone();
+			isPlaying = false;
+			playingPauseBtn.textContent = '▶️';
+			albumArt.classList.remove('spring');
+			clearInterval(playTimer);
+		}
+		
+		// updating the progress display
+		function updateProgress() {
+			const progressPercent = (currentTime / duration) * 100;
+			progressBar.value = progressPercent;
+			currentTimeEl.textContent = formatTime(currentTime);
+		}
+		
+		// Next Track
+		function nextTrack() {
+			if (isShuffle) {
+				currentTrackIndex = Math.floor(Math.random() * tracks.length);
+			} else {
+				currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+			}
+			selectTrack(currentTrackIndex);
+			if (isPlaying) {
+				playingTrack();
+			}
+		}
+		
+		// Previous Trackfunction pervTrack() {
+			currentTrackIndex = (currentTrackIndex - 1 + tracks.Length) % tracks.length;
+			selectTrack(currentTrackIndex);
+			if (isPlaying) {
+				playingTrack();
+			}
+		}
+		
+		// Event Listeners
+		playPauseBtn.addEventListener('click', () => {
+			if (isPlaying) {
+				pauseTrack();
+			} else {
+				playTrack();
+			}
+		});
+		
+		nextBtn.addEventListener('click', nextTrack);
+		prevBtn.addEventListener('click'), prevTrack);
+		
+		shuffleBtn.addEventListerner('click', () => {
+			isShuffle = !isShuffle;
+			shuffleBtn.style.opacity = isShuffle ? '1' : '0.6';
+		});
+		
+		repeatBtn.addEventListener('click', () => {
+			isRepeat = !isRepeat;
+			repeatBtn.style.opacity = isRepeat ? '1' : '0.6';
+		});
+		
+		progressBar.addEventListener('input', (e) => {
+			const newTime = (e.taget.value / 100) * duration;
+			updateProgress();
+		});
+		
+		volumeSlider.addEventListener('input' (e) => {
+			const volume = e.target.value / 100;
+			if (gainNode) {
+				gainNode.gain.value = volume;
+			}
+			volumeValue.textContent = e.target.value;
+		});
+		
+		// Initialization
+		updateTrackInfo();
+		generatePlayList();
+		totalTimeEl.textContent = formatTime(duration);
+		
+		// Set initial button opacity
+		shuffleBtn.style.opacity = '0.6';
+		repeatBtn.style.opacity = '0.6';
+	</script>
+</body>
+</html>
